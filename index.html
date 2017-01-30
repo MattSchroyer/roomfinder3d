@@ -470,7 +470,14 @@
 </div>
 
 <script>
+
+	Cesium.BingMapsApi.defaultKey = 'AgMPUObFfUw796sB2W3RmUX-IVSpG3lpU4hTzMkLPKTblNcmvfkiO93rgezLiQHz';
+	
 	var viewer = new Cesium.Viewer('cesiumContainer', {
+		imageryProvider : new Cesium.BingMapsImageryProvider({
+		url : 'https://dev.virtualearth.net',
+		key : 'AgMPUObFfUw796sB2W3RmUX-IVSpG3lpU4hTzMkLPKTblNcmvfkiO93rgezLiQHz'
+		}),
 		animation : false,
 		baseLayerPicker : false,
 		geocoder : false,
