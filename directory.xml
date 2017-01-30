@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<directory>
+<classroom>
+    <room_number>1C7</room_number>
+    <latitude> 35.386744</latitude>
+    <longitude>-97.569499</longitude>
+</classroom>
+<classroom>
+    <room_number>1A1</room_number>
+    <latitude>35.386996</latitude>
+    <longitude>-97.568891</longitude>
+</classroom>
+</directory>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<GroundOverlay>
+	<name>MB1c</name>
+	<Icon>
+		<href>MB1c.gif</href>
+		<viewBoundScale>0.75</viewBoundScale>
+	</Icon>
+	<LatLonBox>
+		<north>35.38878405782641</north>
+		<south>35.38565076034797</south>
+		<east>-97.56750784102364</east>
+		<west>-97.57229728801785</west>
+	</LatLonBox>
+</GroundOverlay>
+</kml>
