@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- New and improved classroom finder that removes old pin when it creates a new one -->
+  
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version (or Chrome Frame if pre-IE11). -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>OCCC Room Search</title>
+  <script src="../Build/Cesium/Cesium.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <style>
+      @import url(../Build/Cesium/Widgets/widgets.css);
+      html, body, #cesiumContainer {
+          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      }
+	  
+	  .loadingScreen {
+		display: block;
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		background-size:100%;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-color: #FFFFFF;
+	}
+	
+	#loadingMessage {
+		font-family: sans-serif;
+		font-size: 2em;
+	}
+	
+	.cesium-navigation-help {
+        display: none;
+    }
+	
+	.button {
+				background-color: #911d19;
+				border: none;
+				color: white;
+				padding: 15px 32px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 20px;
+				font-family: Helvetica, sans-serif;
+			}
+	
+	#findbox {
+		background-color: #E0E0E0;
+		height: 75%;
+		width: 75%;
+		padding: 20px 20px 20px 20px;
+		position:absolute;
+		left: 20%;
+		top: 20%;
+		text-align:center;
+		display: none;
+		font-size: 20px;
+		font-family: Helvetica, sans-serif;
+	}
+	
+	#clickfind {
+		position:absolute;
+		top:1px;
+		width:100%;
+		text-align:left;
+		display: none;
+	}
+	
+	#selectAH {
+		display: none;
+	}
+	
+	#selectHPC {
+		display: none;
+	}
+	
+	#selectLIB {
+		display: none;
+	}
+	
+	#selectMB {
+		display: none;
+	}
+	
+	#selectSEM {
+		display: none;
+	}
+	
+	#selectSSC{
+		display: none;
+	}
+	
+	#selectTTC {
+		display: none;
+	}
+	
+	#selectVPAC {
+		display: none;
+	}
+	
+	select {
+		padding: 15px 32px;;
+		margin: 0;
+		-webkit-border-radius:4px;
+		-moz-border-radius:4px;
+		border-radius:4px;
+		background: #f8f8f8;
+		color:#888;
+		border:none;
+		outline:none;
+		display: inline-block;
+		-webkit-appearance:none;
+		-moz-appearance:none;
+		appearance:none;
+		cursor:pointer;
+		font-size: 20px;
+		font-family: Helvetica, sans-serif;
+	}
+
+  </style>
+</head>
+
+<body>
+
+<div id="cesiumContainer"></div>
+
+<div id="loadingScreen" class="loadingScreen">
+		<div id="loadingMessage">
+			<h1>Welcome to OCCC digital orientation!<br> We're loading the campus for you...</h1>
+		</div>
+</div>
+
+<div id="clickfind">
+	<input type="button" class="button" id="show-button" name="wantToFind" value="Find a classroom" onclick="showFindBox()" />
+</div>
+
+<!-- hide buttons in a div? Show via script? -->
+<div id="findbox">
+	What room are you looking for?
+	<br>
+	<br>
+	<select id="building" onchange="changeRoomSelect()">
+		<option value="AH">AH</option>
+		<option value="HPC">HPC</option>
+		<option value="LIB">LIB</option>
+		<option value="MB">MB</option>
+		<option value="SEM">SEM</option>
+		<option value="SSC">SSC</option>
+		<option value="TTC">TTC</option>
+		<option value="VPAC">VPAC</option>
+	</select>
+	<select id="selectAH">
+		<option value="AH-1A3">1A3</option>
+		<option value="AH-1A4">1A4</option>
+		<option value="AH-1C1">1C1</option>
+		<option value="AH-1C2">1C2</option>
+		<option value="AH-1C3">1C3</option>
+		<option value="AH-1C5">1C5</option>
+		<option value="AH-1D1">1D1</option>
+		<option value="AH-1D3">1D3</option>
+		<option value="AH-1E3">1E3</option>
+		<option value="AH-1F1">1F1</option>
+		<option value="AH-1F2">1F2</option>
+		<option value="AH-1F5">1F5</option>
+		<option value="AH-2E1">2E1</option>
+		<option value="AH-2E2">2E2</option>
+		<option value="AH-2E3">2E3</option>
+		<option value="AH-2E4">2E4</option>
+		<option value="AH-2E5">2E5</option>
+		<option value="AH-2F1">2F1</option>
+		<option value="AH-2F2">2F2</option>
+		<option value="AH-2F3">2F3</option>
+		<option value="AH-3E1">3E1</option>
+		<option value="AH-3E2">3E2</option>
+		<option value="AH-3E3">3E3</option>
+		<option value="AH-3E4">3E4</option>
+		<option value="AH-3E5">3E5</option>
+	</select>
+	<select id="selectHPC">
+		<option value="HPC-101">101</option>
+		<option value="HPC-102">102</option>
+		<option value="HPC-103">103</option>
+		<option value="HPC-104">104</option>
+		<option value="HPC-105">105</option>
+		<option value="HPC-109">109</option>
+		<option value="HPC-110">110</option>
+		<option value="HPC-111">111</option>
+		<option value="HPC-143">143</option>
+		<option value="HPC-144">144</option>
+		<option value="HPC-145">145</option>
+		<option value="HPC-146">146</option>
+		<option value="HPC-147">147</option>
+		<option value="HPC-148">148</option>
+		<option value="HPC-167">167</option>
+		<option value="HPC-201">201</option>
+		<option value="HPC-202">202</option>
+		<option value="HPC-203">203</option>
+		<option value="HPC-204">204</option>
+		<option value="HPC-205">205</option>
+		<option value="HPC-206">206</option>
+		<option value="HPC-207">207</option>
+		<option value="HPC-209">209</option>
+		<option value="HPC-210">210</option>
+		<option value="HPC-211">211</option>
+		<option value="HPC-212">212</option>
+		<option value="HPC-213">213</option>
+		<option value="HPC-214">214</option>
+		<option value="HPC-215">215</option>
+		<option value="HPC-216">216</option>
+		<option value="HPC-217">217</option>
+		<option value="HPC-218">218</option>
+		<option value="HPC-222">222</option>
+		<option value="HPC-223">223</option>
+		<option value="HPC-224">224</option>
+		<option value="HPC-225">225</option>
+		<option value="HPC-226">226</option>
+	</select>
+	<select id="selectLIB">
+		<option value="LIB-101">101</option>
+		<option value="LIB-102">102</option>
+		<option value="LIB-103">103</option>
+		<option value="LIB-104">104</option>
+		<option value="LIB-105">105</option>
+		<option value="LIB-106">106</option>
+		<option value="LIB-107">107</option>
+		<option value="LIB-108">108</option>
+		<option value="LIB-109">109</option>
+		<option value="LIB-110">110</option>
+		<option value="LIB-111">111</option>
+		<option value="LIB-112">112</option>
+		<option value="LIB-113">113</option>
+		<option value="LIB-120">120</option>
+		<option value="LIB-121">121</option>
+		<option value="LIB-122">122</option>
+		<option value="LIB-201">201</option>
+		<option value="LIB-202">202</option>
+		<option value="LIB-203">203</option>
+		<option value="LIB-204">204</option>
+		<option value="LIB-205">205</option>
+		<option value="LIB-206">206</option>
+		<option value="LIB-207">207</option>
+		<option value="LIB-208">208</option>
+		<option value="LIB-209">209</option>
+		<option value="LIB-210">210</option>
+		<option value="LIB-211">211</option>
+		<option value="LIB-212">212</option>
+		<option value="LIB-213">213</option>
+		<option value="LIB-300">300</option>
+		<option value="LIB-301">301</option>
+		<option value="LIB-302">302</option>
+		<option value="LIB-303">303</option>
+		<option value="LIB-304">304</option>
+		<option value="LIB-305">305</option>
+		<option value="LIB-306">306</option>
+		<option value="LIB-307">307</option>
+		<option value="LIB-308">308</option>
+		<option value="LIB-309">309</option>
+		<option value="LIB-310">310</option>
+		<option value="LIB-311">311</option>
+		<option value="LIB-312">312</option>
+		<option value="LIB-313">313</option>
+		<option value="LIB-314">314</option>
+		<option value="LIB-315">315</option>
+		<option value="LIB-316">316</option>
+		<option value="LIB-317">317</option>
+		<option value="LIB-318">318</option>
+		<option value="LIB-319">319</option>
+		<option value="LIB-320A">320A</option>
+		<option value="LIB-320B">320B</option>
+		<option value="LIB-321">321</option>
+		<option value="LIB-322">322</option>
+		<option value="LIB-323">323</option>
+		<option value="LIB-324">324</option>
+		<option value="LIB-325">325</option>
+		<option value="LIB-401">401</option>
+		<option value="LIB-402">402</option>
+		<option value="LIB-403">403</option>
+		<option value="LIB-404">404</option>
+		<option value="LIB-405">405</option>
+		<option value="LIB-406">406</option>
+		<option value="LIB-407A">407A</option>
+		<option value="LIB-407B">407B</option>
+		<option value="LIB-408">408</option>
+		<option value="LIB-409">409</option>
+		<option value="LIB-410">410</option>
+	</select>
+	<select id="selectMB">
+		<option value="MB-1T7">1T7</option>
+		<option value="MB-1V7">1V7</option>
+		<option value="MB-1X3">1X3</option>
+		<option value="MB-1X4">1X4</option>
+		<option value="MB-1X5">1X5</option>
+		<option value="MB-1X7">1X7</option>
+		<option value="MB-2I8">2I8</option>
+		<option value="MB-2J4">2J4</option>
+		<option value="MB-2J5">2J5</option>
+		<option value="MB-2J6">2J6</option>
+		<option value="MB-2K1">2K1</option>
+		<option value="MB-2K7">2K7</option>
+		<option value="MB-2L2">2L2</option>
+		<option value="MB-2L8">2L8</option>
+		<option value="MB-2M2">2M2</option>
+		<option value="MB-2M8">2M8</option>
+		<option value="MB-2N0">2N0</option>
+		<option value="MB-2N1">2N1</option>
+		<option value="MB-2N2">2N2</option>
+		<option value="MB-2N3">2N3</option>
+		<option value="MB-2N4">2N4</option>
+		<option value="MB-2N5">2N5</option>
+		<option value="MB-2N6">2N6</option>
+		<option value="MB-2N7">2N7</option>
+		<option value="MB-2N8">2N8</option>
+		<option value="MB-2P0">2P0</option>
+		<option value="MB-2P1">2P1</option>
+		<option value="MB-2P7">2P7</option>
+		<option value="MB-2P8">2P8</option>
+		<option value="MB-2R0">2R0</option>
+		<option value="MB-2R1">2R1</option>
+		<option value="MB-2R2">2R2</option>
+		<option value="MB-2R3">2R3</option>
+		<option value="MB-2R4">2R4</option>
+		<option value="MB-2R5">2R5</option>
+		<option value="MB-2R6">2R6</option>
+		<option value="MB-2R7">2R7</option>
+		<option value="MB-2R8">2R8</option>
+		<option value="MB-3K4">3K4</option>
+		<option value="MB-3K5">3K5</option>
+		<option value="MB-3K6">3K6</option>
+		<option value="MB-3K7">3K7</option>
+		<option value="MB-3K8">3K8</option>
+		<option value="MB-3L2">3L2</option>
+		<option value="MB-3M2">3M2</option>
+		<option value="MB-3M6">3M6</option>
+		<option value="MB-3M8">3M8</option>
+		<option value="MB-3N0">3N0</option>
+		<option value="MB-3N1">3N1</option>
+		<option value="MB-3N2">3N2</option>
+		<option value="MB-3N3">3N3</option>
+		<option value="MB-3N4">3N4</option>
+		<option value="MB-3N5">3N5</option>
+		<option value="MB-3P0">3P0</option>
+		<option value="MB-3P1">3P1</option>
+		<option value="MB-3P2">3P2</option>
+		<option value="MB-3P3">3P3</option>
+		<option value="MB-3P4">3P4</option>
+		<option value="MB-3P5">3P5</option>
+		<option value="MB-3P6">3P6</option>
+	</select>
+	<select id="selectSEM">
+		<option value="SEM-1A1">1A1</option>
+		<option value="SEM-1A4">1A4</option>
+		<option value="SEM-1A5">1A5</option>
+		<option value="SEM-1A6">1A6</option>
+		<option value="SEM-1A7">1A7</option>
+		<option value="SEM-1A8">1A8</option>
+		<option value="SEM-1B1">1B1</option>
+		<option value="SEM-1B2">1B2</option>		
+		<option value="SEM-1B4">1B4</option>
+		<option value="SEM-1B5">1B5</option>
+		<option value="SEM-1B6">1B6</option>
+		<option value="SEM-1B8">1B8</option>
+		<option value="SEM-1C1">1C1</option>
+		<option value="SEM-1C2">1C2</option>
+		<option value="SEM-1C4">1C4</option>
+		<option value="SEM-1C5">1C5</option>
+		<option value="SEM-1C6">1C6</option>
+		<option value="SEM-1C7">1C7</option>
+		<option value="SEM-1C8">1C8</option>
+		<option value="SEM-1D1">1D1</option>
+		<option value="SEM-1D2">1D2</option>
+		<option value="SEM-1D4">1D4</option>
+		<option value="SEM-1D5">1D5</option>
+		<option value="SEM-1D8">1D8</option>
+		<option value="SEM-1E7">1E7</option>
+		<option value="SEM-1F6">1F6</option>
+		<option value="SEM-1G7">1G7</option>
+		<option value="SEM-1N2">1N2</option>
+		<option value="SEM-1N1">1N1</option>
+		<option value="SEM-1R1">1R1</option>
+		<option value="SEM-1R3">1R3</option>
+		<option value="SEM-1S3">1S3</option>
+		<option value="SEM-2A3">2A3</option>
+		<option value="SEM-2A4">2A4</option>
+		<option value="SEM-2A5">2A5</option>
+		<option value="SEM-2A6">2A6</option>
+		<option value="SEM-2A7">2A7</option>
+		<option value="SEM-2A8">2A8</option>
+		<option value="SEM-2B1">2B1</option>
+		<option value="SEM-2B8">2B8</option>
+		<option value="SEM-2C1">2C1</option>
+		<option value="SEM-2C2">2C2</option>
+		<option value="SEM-2C4">2C4</option>
+		<option value="SEM-2C6">2C6</option>
+		<option value="SEM-2C8">2C8</option>
+		<option value="SEM-2D1">2D1</option>
+		<option value="SEM-2D2">2D2</option>
+		<option value="SEM-2E6">2E6</option>
+		<option value="SEM-2F8">2F8</option>
+		<option value="SEM-2G4">2G4</option>
+		<option value="SEM-2G5">2G5</option>
+		<option value="SEM-2G6">2G6</option>
+		<option value="SEM-2G7">2G7</option>
+		<option value="SEM-2G8">2G8</option>
+		<option value="SEM-2H3">2H3</option>
+		<option value="SEM-2H6">2H6</option>
+		<option value="SEM-2H7">2H7</option>
+		<option value="SEM-2H8">2H8</option>
+	</select>
+	<select id="selectSSC">
+		<option value="SSC-1H0">1H0</option>
+		<option value="SSC-1H1">1H1</option>
+		<option value="SSC-1H10">1H10</option>
+		<option value="SSC-1H11">1H11</option>
+		<option value="SSC-1H12">1H12</option>
+		<option value="SSC-1H13">1H13</option>
+		<option value="SSC-1H2">1H2</option>
+		<option value="SSC-1H3">1H3</option>
+		<option value="SSC-1H4">1H4</option>
+		<option value="SSC-1H5">1H5</option>
+		<option value="SSC-1H6">1H6</option>
+		<option value="SSC-1H7">1H7</option>
+		<option value="SSC-1H8">1H8</option>
+		<option value="SSC-1H9">1H9</option>
+	</select>
+	<select id="selectTTC">
+		<option value="TTC-1A1">1A1</option>
+		<option value="TTC-1B2">1B2</option>
+		<option value="TTC-1B4">1B4</option>
+		<option value="TTC-1C2">1C2</option>
+		<option value="TTC-1D2">1D2</option>
+	</select>
+	<select id="selectVPAC">
+		<option value="VPAC-101">101</option>
+		<option value="VPAC-106">106</option>
+		<option value="VPAC-107">107</option>
+		<option value="VPAC-108">108</option>
+		<option value="VPAC-113">113</option>
+		<option value="VPAC-120">120</option>
+		<option value="VPAC-121">121</option>
+		<option value="VPAC-122">122</option>
+		<option value="VPAC-124">124</option>
+		<option value="VPAC-126">126</option>
+		<option value="VPAC-127">127</option>
+		<option value="VPAC-128">128</option>
+		<option value="VPAC-131">131</option>
+		<option value="VPAC-132">132</option>
+		<option value="VPAC-135">135</option>
+		<option value="VPAC-136">136</option>
+		<option value="VPAC-140">140</option>
+		<option value="VPAC-141">141</option>
+		<option value="VPAC-142">142</option>
+		<option value="VPAC-143">143</option>
+		<option value="VPAC-144">144</option>
+		<option value="VPAC-145">145</option>
+		<option value="VPAC-146">146</option>
+		<option value="VPAC-147">147</option>
+		<option value="VPAC-160">160</option>
+	</select>
+	<input type="button" class="button" id="submit-button" name="submit" value="Submit" onclick="ReadRoomXML()" />
+	<input type="button" class="button" id="cancel-button" name="submit" value="Cancel" onclick="hideSearch()" />
+</div>
+
+<script>
+	var viewer = new Cesium.Viewer('cesiumContainer', {
+		animation : false,
+		baseLayerPicker : false,
+		geocoder : false,
+		homeButton : false,
+		sceneModePicker : false,
+		timeline : false,
+		skyBox : new Cesium.SkyBox({
+			show : false
+			}),
+		});
+		
+	var MB1 = viewer.entities.add({
+		name : 'First floor',
+		rectangle : {
+			coordinates : Cesium.Rectangle.fromDegrees(-97.57229728801785, 35.38565076034797, -97.56750784102364, 35.38878405782641),
+			material : new Cesium.ImageMaterialProperty({
+				image : '../floorplans/MB1ca.gif',
+				transparent: true,
+				alpha: 0.99
+				})
+		}
+	});
+
+	viewer.zoomTo(viewer.entities);
+
+	// Removes loading screen when camera has settled
+	viewer.camera.moveEnd.addEventListener(function() { 
+		// the camera stopped moving
+		document.getElementById('loadingScreen').style.display = 'none';
+		document.getElementById('clickfind').style.display = 'inline';
+	});
+	
+	// Display the search box when requested
+	function showFindBox() {
+		document.getElementById('findbox').style.display = 'inline';
+		document.getElementById('selectAH').style.display = 'inline';
+	}
+	
+	// select box changing to accomodate different buildings
+	function changeRoomSelect() {
+		if (document.getElementById('building').value == 'AH') {
+			document.getElementById('selectAH').style.display = 'inline';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';
+		}
+		if (document.getElementById('building').value == 'HPC') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'inline';
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}	
+		if (document.getElementById('building').value == 'LIB') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'inline';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}
+		if (document.getElementById('building').value == 'MB') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';	
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'inline';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}
+		if (document.getElementById('building').value == 'SEM') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'none';		
+			document.getElementById('selectSEM').style.display = 'inline';
+			document.getElementById('selectSSC').style.display = 'none';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}
+		if (document.getElementById('building').value == 'SSC') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';		
+			document.getElementById('selectSSC').style.display = 'inline';
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}
+		if (document.getElementById('building').value == 'TTC') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';		
+			document.getElementById('selectTTC').style.display = 'inline';
+			document.getElementById('selectVPAC').style.display = 'none';		
+		}
+		if (document.getElementById('building').value == 'VPAC') {
+			document.getElementById('selectAH').style.display = 'none';
+			document.getElementById('selectHPC').style.display = 'none';
+			document.getElementById('selectLIB').style.display = 'none';
+			document.getElementById('selectMB').style.display = 'none';
+			document.getElementById('selectSEM').style.display = 'none';
+			document.getElementById('selectSSC').style.display = 'none';		
+			document.getElementById('selectTTC').style.display = 'none';
+			document.getElementById('selectVPAC').style.display = 'inline';
+		}
+	}
+	
+	var hasPinAlready = false;
+	var hasFloorAlready = false;
+	var floorName = 'MB1ca';
+	
+	function hideSearch()	{
+		document.getElementById('findbox').style.display = 'none';
+	}
+
+	// Now all the functions to read the text input and find the classroom
+	function ReadRoomXML() {
+		hideSearch();
+
+		try {
+			var xmlPath = "RoomFinderDirectory.kml";
+			$.ajax({
+				type: "GET",
+				url: xmlPath,
+				dataType: "xml",
+				success: parseRoomXML
+			});
+		} catch (e) {
+			alert("Error while reading Room XML; Description – " + e.description);
+		}
+	}
+
+	
+	function ReadFloorXML() {	
+		try {
+			var xmlPath = "FloorplanDirectory.kml";
+			$.ajax({
+				type: "GET",
+				url: xmlPath,
+				dataType: "xml",
+				success: parseFloorXML
+				});
+		}
+		catch (e) {
+			alert("Error while reading Room XML; Description – " + e.description);
+		}
+	}
+
+
+	function parseRoomXML(xml) {
+
+		if (hasPinAlready = true) {
+			viewer.entities.removeById('myClassroom');
+			}
+		
+		if (document.getElementById("building").value == 'AH') {
+			var thisRoom = document.getElementById("selectAH").value;
+		}
+		if (document.getElementById("building").value == 'HPC') {
+			var thisRoom = document.getElementById("selectHPC").value;
+		}	
+		if (document.getElementById("building").value == 'LIB') {
+			var thisRoom = document.getElementById("selectLIB").value;
+		}
+		if (document.getElementById("building").value == 'MB') {
+			var thisRoom = document.getElementById("selectMB").value;
+		}
+		if (document.getElementById("building").value == 'SEM') {
+			var thisRoom = document.getElementById("selectSEM").value;
+		}
+		if (document.getElementById("building").value == 'SSC') {
+			var thisRoom = document.getElementById("selectSSC").value;
+		}
+		if (document.getElementById("building").value == 'TTC') {
+			var thisRoom = document.getElementById("selectTTC").value;
+		}
+		if (document.getElementById("building").value == 'VPAC') {
+			var thisRoom = document.getElementById("selectVPAC").value;
+		}
+		
+		
+		var $classroom = $(xml).find('name').filter(function() {
+			return $(this).text() == thisRoom;
+		}).closest('Placemark');
+
+		floorName = $('description', $classroom).text();
+		var coordinates = $('coordinates', $classroom).text();
+		var longLatAlt = coordinates.split(',');
+
+		var pinBuilder = new Cesium.PinBuilder();
+
+		var roomPin = viewer.entities.add({
+			id : 'myClassroom',
+			name : thisRoom,
+			position : Cesium.Cartesian3.fromDegrees(longLatAlt[0], longLatAlt[1], longLatAlt[2]),
+			//	if the altitude of the pin was 50 meters, your position would be:
+			//	Cesium.Cartesian3.fromDegrees(longitude, latitude, 50),
+			billboard : {
+				image : pinBuilder.fromText(thisRoom, Cesium.Color.BLACK, 48).toDataURL(),
+				verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+			}
+		});
+		
+		viewer.zoomTo(roomPin);
+		hasPinAlready = true;
+		ReadFloorXML();
+	}
+
+	function parseFloorXML(xml) {
+
+		var $floor = $(xml).find('name').filter(function() {
+			return $(this).text() == floorName;
+		}).closest('GroundOverlay');
+
+		var north = $('north', $floor).text();
+		var south = $('south', $floor).text();
+		var east = $('east', $floor).text();
+		var west = $('west', $floor).text();
+		var altitude = $('altitude', $floor).text();
+		var floorImg = $('href', $floor).text();
+
+		// Works fine for finding the floorplan
+		// Now need to correct the altitudes in the KML
+		// Also need to add the actual rectangle (floorplan)
+		// Also need to remove other rectangles if necessary (floorplan)
+
+		if (hasFloorAlready = true) {
+			viewer.entities.removeById('myFloor');
+		}
+
+		if (floorName != 'MB1ca') {
+			if (altitude == 0) {
+				var thisFloor = viewer.entities.add({
+					id : 'myFloor',
+					name : floorName,
+					rectangle : {
+						coordinates : Cesium.Rectangle.fromDegrees(west, south, east, north),
+						material : new Cesium.ImageMaterialProperty({
+							image : floorImg,
+							transparent: true,
+							alpha: 0.99
+							})
+					}
+				});
+			} else {
+			var thisFloor = viewer.entities.add({
+				id : 'myFloor',
+				name : floorName,
+				rectangle : {
+					coordinates : Cesium.Rectangle.fromDegrees(west, south, east, north),
+					material : new Cesium.ImageMaterialProperty({
+						image : floorImg,
+						transparent: true,
+						alpha: 0.99
+						}),
+					height : altitude
+				}
+			});
+			}			
+			hasFloorAlready = true;
+		}
+
+	}
+	
+
+</script>
+</body>
+</html>
